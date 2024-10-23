@@ -37,7 +37,7 @@ def read_item(page_number: Optional[int] = None, items_per_page: Optional[int] =
        return f"Aici vor fi returnate toate disciplinele"
     else:
         return f"Aici vor fi returnate disciplinele de la pagina {page_number} cu {items_per_page} per pagina"
-    
+
 @app.get("/api/academia/professors")
 def read_item(name: Optional[str] = None, acad_rank: Optional[str] = None):
     if name and not acad_rank:
