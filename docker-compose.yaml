@@ -1,0 +1,41 @@
+services:
+  fastapi:
+    build: 
+      context: .
+      dockerfile: ./API/Dockerfile
+    environment:
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: my_user
+      MYSQL_PASSWORD: my_password
+      MYSQL_HOST: mariadb
+      MYSQL_PORT: 3306
+    ports:
+      - "8000:80" 
+    networks:
+      - app-network
+    depends_on:
+      - mariadb
+    restart: always
+
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: my_user
+      MYSQL_PASSWORD: my_password
+    ports:
+      - "3307:3306"
+    networks:
+      - app-network
+    volumes:
+      - mariadb_data:/var/lib/mysql
+  
+
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mariadb_data:
