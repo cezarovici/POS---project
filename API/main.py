@@ -5,6 +5,8 @@ from peewee import *
 
 import database as db
 import students as s
+import discipline as disc
+import cadru_didactic as cd
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,10 +19,6 @@ app = FastAPI(lifespan=lifespan)
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-@app.get("/api/academia/lectures/{id}")
-async def read_item(id: Optional[int] = None):
-    return {"Aici va fi returnata disciplina cu id-ul": id}
 
 @app.get("/api/academia/professors/{id}")
 def read_item(id: int):
@@ -35,26 +33,44 @@ def read_item(id: int):
     return {"Aici vor fi returnate disciplinele la care participa studentul cu id-ul": id}
 
 @app.get("/api/academia/lectures")
-def read_item(page_number: Optional[int] = None, items_per_page: Optional[int] = None):
-    if page_number and not items_per_page:
-        return f"Aici vor fi returnate toate disciplinele de la pagina"
-    if not page_number and items_per_page:
-        return f"Aici vor fi returnate toate disciplinele cate {items_per_page} pe pagina"
-    if not page_number and not items_per_page:
-       return f"Aici vor fi returnate toate disciplinele"
-    else:
-        return f"Aici vor fi returnate disciplinele de la pagina {page_number} cu {items_per_page} per pagina"
+async def get_disciplines(
+    cod: Optional[str] = None,
+    id_titular: Optional[int] =None,
+    nume_disciplina: Optional[str] = None,
+    an_studiu: Optional[int] = None,
+    tip_disciplina: Optional[str] = None,
+    categorie_disciplina: Optional[str] = None,
+    tip_examinare: Optional[str] = None
+):
+    return await disc.Disciplina.get_filtered_disciplines(
+        cod=cod,
+        id_titular=id_titular,
+        nume_disciplina=nume_disciplina,
+        an_studiu=an_studiu,
+        tip_disciplina=tip_disciplina,
+        categorie_disciplina=categorie_disciplina,
+        tip_examinare=tip_examinare
+    )
 
 @app.get("/api/academia/professors")
-def read_item(name: Optional[str] = None, acad_rank: Optional[str] = None):
-    if name and not acad_rank:
-        return f"Aici va fi returnat profesorii care au numele {name}"
-    if acad_rank and not name:
-        return f"Aici vor fi returnati profesorii cu gradul {acad_rank}"
-    if acad_rank and name:
-        return f"Aici vor fi profesorii cu gradul {acad_rank} si numele {name}"
-    else:
-        return f"Aici vor fi afisati toti profesorii"
+async def get_filtered_teaching_staff(     id: Optional[int] = None,
+                                          nume: Optional[str] = None,
+                                          prenume: Optional[str] = None,
+                                          email: Optional[str] = None,
+                                          grad_didactic: Optional[str] = None,
+                                          tip_asociere: Optional[str] = None,
+                                          afiliere: Optional[str] = None):
+    
+    return await cd.CadruDidactic.get_filtered_teaching_staff(
+        id=id,
+        nume=nume,
+        prenume=prenume,
+        email=email,
+        grad_didactic=grad_didactic,
+        tip_asociere=tip_asociere,
+        afiliere=afiliere
+    )
+
 
 @app.get("/api/academia/students")
 async def get_students(nume: Optional[str] = None, grupa: Optional[str] = None, an_studiu: Optional[int] = None):
