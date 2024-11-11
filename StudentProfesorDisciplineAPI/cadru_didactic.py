@@ -73,7 +73,7 @@ class CadruDidactic(db.DbModel):
                 "afiliere": staff.afiliere
             }
             for staff in query
-        ]
+        ]        
 
     class Meta:
         table_name = 'cadru_didactic'

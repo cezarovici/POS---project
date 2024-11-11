@@ -3,6 +3,14 @@ from contextlib import asynccontextmanager
 from typing import Optional
 from peewee import *
 
+from fastapi_hypermodel import (
+    FrozenDict,
+    HALFor,
+    HALHyperModel,
+    HALLinks,
+    HALResponse,
+)
+
 import database as db
 import students as s
 import discipline as disc
@@ -15,18 +23,20 @@ async def lifespan(app: FastAPI):
     db.db.close()
     
 app = FastAPI(lifespan=lifespan)
+HALHyperModel.init_app(app)
+
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
 @app.get("/api/academia/professors/{id}")
-def read_item(id: int):
-    return {"Aici va fi returnat profesorul cu id-ul": id}
+async def read_item(id: int):
+    return await cd.CadruDidactic.get_filtered_teaching_staff(id=id)
 
-@app.get("/api/academia/professors/{id}/lectures")
-def read_item(id: int):
-    return {"Aici vor fi returnate disciplinele pe care le preda profesorul cu id-ul": id}
+@app.get("/api/academia/professors/{id_professor}/lectures")
+async def read_item(id_professor: int):
+    return await disc.Disciplina.get_lectures_by_professor(id_professor)
 
 @app.get("/api/academia/students/{id}/lectures")
 def read_item(id: int):
@@ -53,7 +63,7 @@ async def get_disciplines(
     )
 
 @app.get("/api/academia/professors")
-async def get_filtered_teaching_staff(     id: Optional[int] = None,
+async def get_filtered_teaching_staff(    id: Optional[int] = None,
                                           nume: Optional[str] = None,
                                           prenume: Optional[str] = None,
                                           email: Optional[str] = None,
@@ -71,7 +81,6 @@ async def get_filtered_teaching_staff(     id: Optional[int] = None,
         afiliere=afiliere
     )
 
-
-@app.get("/api/academia/students")
-async def get_students(nume: Optional[str] = None, grupa: Optional[str] = None, an_studiu: Optional[int] = None):
+@app.get("/api/academia/students", response_class=HALResponse)
+async def get_students(nume: Optional[str] = None, grupa: Optional[int] = None, an_studiu: Optional[int] = None):
     return await s.Student.get_filtered_students(nume=nume, grupa=grupa, an_studiu=an_studiu)

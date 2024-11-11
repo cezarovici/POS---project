@@ -1,8 +1,13 @@
 from peewee import *
-from typing import Optional
+from typing import Optional, List
 
 import database as db
 import cadru_didactic as cd
+
+class HATEOASLink():
+    rel : str
+    href : str
+    
 
 class Disciplina(db.DbModel):
     COD = CharField(10, primary_key=True) 
@@ -12,6 +17,7 @@ class Disciplina(db.DbModel):
     tip_disciplina = CharField(20, constraints=[Check("tip_disciplina IN ('Impusa', 'Optionala', 'Liber_Aleasa')")])
     categorie_disciplina = CharField(20, constraints=[Check("categorie_disciplina IN ('Domeniu', 'Specialitate', 'Adiacenta')")])
     tip_examinare = CharField(20, constraints=[Check("tip_examinare IN ('Examen', 'Colocviu')")])
+    links : List[HATEOASLink]
 
     class Meta:
         table_name = 'disciplina'
@@ -53,4 +59,35 @@ class Disciplina(db.DbModel):
                 "tip_examinare": disciplina.tip_examinare
             }
             for disciplina in query
+        ]
+
+    @classmethod
+    async def get_lectures_by_professor(self,id_titular):        
+        query = self.select().join(cd.CadruDidactic).where(cd.CadruDidactic.id == id_titular)
+        
+        return [
+            {
+                "COD": disciplina.COD,
+                "id_titular": disciplina.id_titular if disciplina.id_titular else None,
+                "nume_disciplina": disciplina.nume_disciplina,
+                "an_studiu": disciplina.an_studiu,
+                "tip_disciplina": disciplina.tip_disciplina,
+                "categorie_disciplina": disciplina.categorie_disciplina,
+                "tip_examinare": disciplina.tip_examinare,
+            }
+            for disciplina in query
+        ]
+        
+    @classmethod
+    async def get_lectures_by_student(self,id_student):    
+        pass    
+        #TODO
+        
+        
+    @classmethod
+    def generate_hateoas_links(id_cadru_didactic: int) -> List[HATEOASLink]:
+        return [
+            HATEOASLink(rel="self", href=f"/api/academia/professors/{id_cadru_didactic}"),
+            HATEOASLink(rel="all_discipline", href=f"/api/academia/professors/{id_cadru_didactic}/discipline"),
+            HATEOASLink(rel="all_professors", href="/api/academia/professors"),
         ]

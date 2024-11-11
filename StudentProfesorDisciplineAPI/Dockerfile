@@ -2,11 +2,11 @@ FROM python:3.9
 
 WORKDIR /code
 
-COPY ./API/requirements.txt /code/requirements.txt
+COPY ./StudentProfesorDisciplineAPI/requirements.txt /code/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY ./API /code/app
+COPY ./StudentProfesorDisciplineAPI/ /code/app
 
 CMD ["fastapi", "run", "app/main.py", "--proxy-headers", "--port", "80"]
 
