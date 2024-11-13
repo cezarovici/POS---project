@@ -2,6 +2,7 @@ package main
 
 import (
 	"materiale_api/configs"
+	"materiale_api/routes"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -11,6 +12,7 @@ func main() {
 
 	//run database
 	configs.ConnectDB()
+	routes.MaterialeRoute(app)
 
 	app.Listen(":9090")
 }

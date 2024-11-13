@@ -31,7 +31,7 @@ type FisierPDF struct {
 
 type Material struct {
 	ID                 primitive.ObjectID `bson:"_id,omitempty"`                // ID-ul unic în MongoDB
-	IDDisciplina       int                `bson:"idDisciplina"`                 // ID-ul disciplinei
+	IDDisciplina       string             `bson:"idDisciplina"`                 // ID-ul disciplinei
 	ProbeEvaluare      []ProbaEvaluare    `bson:"probeEvaluare"`                // Listează toate probele de evaluare pentru această disciplină
 	MaterialeCurs      []FisierPDF        `bson:"materialeCurs,omitempty"`      // Materialele de curs (fișiere PDF)
 	MaterialeLaborator []FisierPDF        `bson:"materialeLaborator,omitempty"` // Materialele de laborator (fișiere PDF)

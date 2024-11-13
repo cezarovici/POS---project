@@ -20,15 +20,10 @@ func ConnectDB() *mongo.Client {
 	if err != nil {
 		panic(err)
 	}
-	defer func() {
-		if err = client.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
 
 	// Send a ping to confirm a successful connection
 	var result bson.M
-	if err := client.Database("admin").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&result); err != nil {
+	if err := client.Database("materiale").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&result); err != nil {
 		panic(err)
 	}
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
@@ -41,6 +36,6 @@ var DB *mongo.Client = ConnectDB()
 
 // getting database collections
 func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-	collection := client.Database("golangAPI").Collection(collectionName)
+	collection := client.Database("materiale").Collection(collectionName)
 	return collection
 }
