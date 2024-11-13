@@ -36,6 +36,8 @@ services:
     build:
       context : .
       dockerfile : ./MaterialeAPI\Dockerfile
+    ports:
+      - "9090:9090"
 
     environment:
       - DB_ADMIN_USERNAME = rootcezar
